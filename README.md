@@ -28,6 +28,7 @@ Step:1 Download all the files
 Step:2 run main file
 
 Step:3 Run a yolowebcam.py file
+and place food in front of it .it will detect .
 
 Step:4 in this file it contain of 20 south indian food dataset with calories 
 
