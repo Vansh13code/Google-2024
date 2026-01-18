@@ -1,25 +1,23 @@
-import streamlit as st
+import gradio as gr
 import cv2
 import tempfile
 from ultralytics import YOLO
 
-st.set_page_config(page_title="Food Calorie Detector", layout="centered")
+model = YOLO("yolov8l.pt")
 
-st.title("🍔 Food Calorie Detection using YOLO")
+def detect(file):
+    temp = tempfile.NamedTemporaryFile(delete=False)
+    temp.write(file)
+    results = model.predict(temp.name)
+    img = results[0].plot()
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-# Load model
-model = YOLO("yolov8l.pt")   # you already have this file
+demo = gr.Interface(
+    fn=detect,
+    inputs=gr.Image(type="numpy", label="Upload Food Image"),
+    outputs=gr.Image(label="Detected Food"),
+    title="🍔 Food Calorie Detection using YOLOv8 by Vansh Batra",
+    description="Upload food image to detect items and estimate calories"
+)
 
-uploaded_file = st.file_uploader("Upload Food Image or Video", type=["jpg","png","jpeg","mp4"])
-
-if uploaded_file is not None:
-    temp_file = tempfile.NamedTemporaryFile(delete=False)
-    temp_file.write(uploaded_file.read())
-
-    if uploaded_file.type.startswith("image"):
-        results = model.predict(temp_file.name)
-        annotated = results[0].plot()
-        st.image(annotated, channels="BGR")
-
-    else:
-        st.video(temp_file.name)
+demo.launch()
